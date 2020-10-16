@@ -1,9 +1,9 @@
 import java.io.*;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.*;
 
-public class pairup {
+
+public class moobuzz {
 
     static class InputReader {
         BufferedReader reader;
@@ -41,58 +41,31 @@ public class pairup {
 
     static {
         try {
-            sc = new InputReader(new File("pairup.in"));
+            sc = new InputReader(new File("moobuzz.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-    static class Cow implements Comparable<Cow>{
-       int numCow; int time;
-
-       public Cow(int numCow, int time){
-           this.numCow = numCow;
-           this.time = time;
-       }
-
-        @Override
-        public int compareTo(Cow o) {
-            return Integer.compare(this.time, o.time);
-        }
-    }
 
     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("pairup.out")));
-        int N = sc.nextInt(); int ans = 0;
-        Cow [] cows = new Cow[N];
-        for (int i = 0; i < N; i++) {
-            cows[i] = new Cow(sc.nextInt(), sc.nextInt());
-        }
-        Arrays.sort(cows);
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("moobuzz.out")));
+        long N = sc.nextLong(); long high = N * 5; long low = 0; 
+	while(low < high){
+		long mid = (high + low) / 2; 
+		long nums = mid - (mid / 3) - (mid / 5) + (mid / 15); // Finds the number of numbers not divsible by 5 and 3 
+		if(nums >= N){
+			high = mid; 
+		}else{
+			low = mid + 1; 
+		}
+	}
+        
 
-        int right = cows.length - 1; int left = 0;
-        while(right >= left){
-            int minCow = Math.min(cows[left].numCow, cows[right].numCow);
-
-            cows[left].numCow -= minCow;
-            cows[right].numCow -= minCow;
-
-            int currSum = cows[left].time + cows[right].time;
-
-            ans = Math.max(currSum, ans);
-
-            if(cows[left].numCow <= 0){
-                ++left;
-            }
-            if(cows[right].numCow <= 0){
-                --right;
-            }
-
-        }
-
-        out.println(ans);
+	out.println(low); 
         out.close();
     }
 }
+
 
 
 
