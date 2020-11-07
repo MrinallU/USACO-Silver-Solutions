@@ -65,6 +65,7 @@ public class convention {
             arr[i] = sc.nextInt();
         }
         Arrays.sort(arr);
+        
 
         out.println( binSearch(0, 1000000000));
 
