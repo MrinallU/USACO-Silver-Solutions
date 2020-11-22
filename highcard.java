@@ -1,9 +1,7 @@
 import java.io.*;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
-
-public class convention {
+public class highcard {
 
     static class InputReader {
         BufferedReader reader;
@@ -13,6 +11,7 @@ public class convention {
             reader = new BufferedReader(new FileReader(stream), 32768);
             tokenizer = null;
         }
+
         String next() { // reads in the next string
             while (tokenizer == null || !tokenizer.hasMoreTokens()) {
                 try {
@@ -31,6 +30,9 @@ public class convention {
         public long nextLong() {
             return Long.parseLong(next());
         } // reads in the next long
+        public char nextChar() {
+            return (next().charAt(0));
+        } // reads in the next int
 
         public double nextDouble() {
             return Double.parseDouble(next());
@@ -41,57 +43,49 @@ public class convention {
 
     static {
         try {
-            sc = new InputReader(new File("convention.in"));
+            sc = new InputReader(new File("highcard.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-     static int N = sc.nextInt(); static int nubBuses = sc.nextInt();static int capacity = 0;
-    static int [] arr = new int[N];
-    public static int binSearch(int low,int high) {
-        if(low == high) return low;
-        if(low + 1 == high)
-        {
-            if(check(low)) return low;
-            return high;
-          
-        }
-        int mid = (low+high)/2;
-        if(check(mid)) return binSearch(low,mid);
-        else return binSearch(mid+1,high);
-    }
     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("convention.out")));
-        for (int i = 0; i < N; i++) {
-            arr[i] = sc.nextInt();
-        }
-        Arrays.sort(arr);
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("highcard.out")));
         
+int n = sc.nextInt(); int [] elsieCards = new int[n]; boolean [] elsieVisited = new boolean[n * 2 + 1]; int points = 0;
+        TreeSet<Integer> bessieQueue = new TreeSet<>();
 
-        out.println( binSearch(0, 1000000000));
-
-            out.close();
+        for (int i = 0; i < n; i++) {
+            int c = sc.nextInt();
+            elsieCards[i] = c;
+            elsieVisited[c] = true;
         }
 
-    private static boolean check(int interval) {
-	int wagons = 1;
-	int firstArrival = arr[0];
-	int firstIndex = 0;
-	for(int i=1;i<N;i++)
-	{
-		if(arr[i] - firstArrival > interval || i + 1 - firstIndex > capacity)
-		{
-			wagons += 1;
-			firstArrival = arr[i];
-			firstIndex = i;
-		}
-	}
-	return (wagons <= nubBuses);
+        for (int i = 1; i <= n * 2; i++) {
+            if(!elsieVisited[i]){
+                bessieQueue.add(i); // bessie has all of the cards that elsie does not have
+            }
+        }
+
+
+        for (int card: elsieCards){
+            if(bessieQueue.higher(card) != null) {
+                int upperCard = bessieQueue.higher(card);
+                ++points;
+                bessieQueue.remove(upperCard);
+            }
+        }
+        out.println(points);
+
+
+
+
+
+
+        out.close();
+
     }
+
 }
-
-
- 
 
 
 
