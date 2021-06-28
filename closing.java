@@ -1,152 +1,111 @@
 import java.io.*;
 import java.util.*;
 
+
 public class closing {
-   static  TreeSet<Integer> set = new TreeSet<>();
-
-    static class InputReader {
-        BufferedReader reader;
-        StringTokenizer tokenizer;
-
-        public InputReader(File stream) throws FileNotFoundException {
-            reader = new BufferedReader(new FileReader(stream), 32768);
-            tokenizer = null;
-        }
-
-        String next() { // reads in the next string
-            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
-                try {
-                    tokenizer = new StringTokenizer(reader.readLine());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return tokenizer.nextToken();
-        }
-
-        public int nextInt() {
-            return Integer.parseInt(next());
-        } // reads in the next int
-
-        public long nextLong() {
-            return Long.parseLong(next());
-        } // reads in the next long
-
-        public double nextDouble() {
-            return Double.parseDouble(next());
-        } // reads in the next double
-    }
-
-    static InputReader sc;
+    static Kattio sc;
 
     static {
         try {
-            sc = new InputReader(new File("closing.in"));
-        } catch (FileNotFoundException e) {
+            sc = new Kattio("closing");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    static class Graph
-    {
-        private int V;   // No. of vertices
 
+    static int n, m;
+    static ArrayList<Integer> adj[];
+    static boolean [] visited, closed;
 
-        // Array  of lists for Adjacency List Representation
-        private LinkedList<Integer> adj[];
-
-
-        // Constructor
-        @SuppressWarnings("unchecked")
-        Graph(int v)
-        {
-            V = v;
-            adj = new LinkedList[v];
-            for (int i=0; i<v; ++i)
-                adj[i] = new LinkedList();
-        }
-
-        //Function to add an edge into the graph
-        void addEdge(int v, int w)
-        {
-            adj[v].add(w);  // Add w to v's list.
-            adj[w].add(v);
-        }
-
-        void removeEdge(int v){
-            for (int i: adj[v]) {
-                adj[i].remove((Integer) v);
-            }
-            adj[v].removeAll(adj[v]);
-        }
-
-        // A function used by DFS
-        int DFSUtil(int v, boolean[] visited)
-        {
-            // Mark the current node as visited and print it
-
-            visited[v] = true;
-            set.add(v);
-
-
-            // Recur for all the vertices adjacent to this vertex
-            Iterator<Integer> i = adj[v].listIterator();
-            while (i.hasNext())
-            {
-                int n = i.next();
-                if (!visited[n])
-                   DFSUtil(n, visited);
-
-
-            }
-            return 1;
-
-        }
-
-        // The function to do DFS traversal. It uses recursive DFSUtil()
-        int DFS(int v)
-        {
-            // Mark all the vertices as not visited(set as
-            // false by default in java)
-            set.clear();
-            boolean visited[] = new boolean[V];
-
-            // Call the recursive helper function to print DFS traversal
-
-            return DFSUtil(v, visited);
-        }
-
-
+    public static void dfs(int node) {
+        visited[node] = true;
+        for (int u: adj[node])
+            if(!visited[u] && !closed[u])
+                dfs(u);
     }
 
+    public static void close(int b){
+        closed[b] = true;
+    }
 
-    public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("closing.out")));
-        int N = sc.nextInt(); int M = sc.nextInt(); int connectionsRequired = N;
-        Graph g = new Graph(N + 1);
-
-        for (int i = 0; i < M; i++) {
-            g.addEdge(sc.nextInt(), sc.nextInt());
-        }
-        for (int i = 0; i < N; i++) {
-            int connections = 0;
-            for (int j = 1; j <= N; j++) {
-                g.DFS(j);
-                connections = Math.max(set.size(), connections);
-
+    public static int count_components() {
+        int count = 0;
+        visited = new boolean[n + 1]; // reset
+        for (int i = 1; i <= adj.length-1; i++){
+            if(!visited[i] && !closed[i]){
+                count++;
+                dfs(i);
             }
-            if(connections == connectionsRequired){
-                out.println("YES");
+        }
+        return count;
+    }
+
+    public static void main(String[] args){
+        n = sc.nextInt();
+        m = sc.nextInt();
+
+        visited = new boolean[n + 1];
+        closed = new boolean[n + 1];
+        adj = new ArrayList[n + 1]; // can be one indexed
+
+        for (int i = 0; i <= n; i++) adj[i] = new ArrayList<Integer>();
+        for (int i = 0; i < m; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            adj[u].add(v);
+            adj[v].add(u);
+        }
+
+        for(int i = 0; i < n; ++i){
+            if(count_components() == 1){
+                sc.println("YES");
             }else{
-                out.println("NO");
+                sc.println("NO");
             }
-            g.removeEdge(sc.nextInt());
-            --connectionsRequired;
+            close(sc.nextInt());
         }
 
-
-        out.close();
-
+        sc.close();
     }
+
+
+
+    static class Kattio extends PrintWriter {
+        private BufferedReader r;
+        private StringTokenizer st;
+
+        // standard input
+        public Kattio() { this(System.in,System.out); }
+        public Kattio(InputStream i, OutputStream o) {
+            super(o);
+            r = new BufferedReader(new InputStreamReader(i));
+        }
+        // USACO-style file input
+        public Kattio(String problemName) throws IOException {
+            super(new FileWriter(problemName+".out"));
+            r = new BufferedReader(new FileReader(problemName+".in"));
+        }
+
+        // returns null if no more input
+        public String next() {
+            try {
+                while (st == null || !st.hasMoreTokens())
+                    st = new StringTokenizer(r.readLine());
+                return st.nextToken();
+            } catch (Exception e) {}
+            return null;
+        }
+
+        public int nextInt() { return Integer.parseInt(next()); }
+        public double nextDouble() { return Double.parseDouble(next()); }
+        public long nextLong() { return Long.parseLong(next()); }
+    }
+
 }
+
+
+
+
+
 
 

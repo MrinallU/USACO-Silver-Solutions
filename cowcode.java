@@ -1,7 +1,9 @@
+
+
 import java.io.*;
 import java.util.*;
 
-public class highcard {
+public class cowcode {
 
     static class InputReader {
         BufferedReader reader;
@@ -30,9 +32,9 @@ public class highcard {
         public long nextLong() {
             return Long.parseLong(next());
         } // reads in the next long
+
         public char nextChar() {
             return (next().charAt(0));
-            
         } // reads in the next int
 
         public double nextDouble() {
@@ -44,51 +46,46 @@ public class highcard {
 
     static {
         try {
-            sc = new InputReader(new File("highcard.in"));
+            sc = new InputReader(new File("cowcode.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-    public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("highcard.out")));
-        
-int n = sc.nextInt(); int [] elsieCards = new int[n]; boolean [] elsieVisited = new boolean[n * 2 + 1]; int points = 0;
-        TreeSet<Integer> bessieQueue = new TreeSet<>();
 
-        for (int i = 0; i < n; i++) {
-            int c = sc.nextInt();
-            elsieCards[i] = c;
-            elsieVisited[c] = true;
+    static class v implements Comparable<v> {
+        public int value;
+        public int index;
+
+        public v(int value, int index) {
+            this.value = value;
+            this.index = index;
         }
 
-        for (int i = 1; i <= n * 2; i++) {
-            if(!elsieVisited[i]){
-                bessieQueue.add(i); // bessie has all of the cards that elsie does not have
-            }
+        @Override
+        public int compareTo(v o) {
+            return Integer.compare(this.value, o.value);
         }
-
-
-        for (int card: elsieCards){
-            if(bessieQueue.higher(card) != null) {
-                int upperCard = bessieQueue.higher(card);
-                ++points;
-                bessieQueue.remove(upperCard);
-            }
-        }
-        out.println(points);
-
-
-
-
-
-
-        out.close();
-
     }
 
+    public static void main(String[] args) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("cowcode.out")));
+        String s = sc.next(); int n =  sc.nextInt();
+        StringBuilder modString = new StringBuilder();
+
+
+        modString.append(s); // Adds the original string to the builder
+        while (modString.length() < n) {
+            StringBuilder tempBuilder = new StringBuilder();
+            tempBuilder.append(modString);
+            tempBuilder.insert(0, tempBuilder.charAt(tempBuilder.length() - 1));
+            tempBuilder.replace(tempBuilder.length() - 1, tempBuilder.length(), "");
+            modString.append(tempBuilder);
+        }
+
+        out.println(modString.charAt(n - 1));
+        out.close();
+    }
 }
-
-
 
 
 

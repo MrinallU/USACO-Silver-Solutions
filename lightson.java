@@ -1,152 +1,128 @@
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
+
 public class lightson {
-
-    static class InputReader {
-        BufferedReader reader;
-        StringTokenizer tokenizer;
-
-        public InputReader(File stream) throws FileNotFoundException {
-            reader = new BufferedReader(new FileReader(stream), 32768);
-            tokenizer = null;
-        }
-
-        String next() { // reads in the next string
-            while (tokenizer == null || !tokenizer.hasMoreTokens()) {
-                try {
-                    tokenizer = new StringTokenizer(reader.readLine());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return tokenizer.nextToken();
-        }
-
-        public int nextInt() {
-            return Integer.parseInt(next());
-        } // reads in the next int
-
-        public long nextLong() {
-            return Long.parseLong(next());
-        } // reads in the next long
-
-        public double nextDouble() {
-            return Double.parseDouble(next());
-        } // reads in the next double
-    }
-
-    static InputReader sc;
+    static Kattio sc;
 
     static {
         try {
-            sc = new InputReader(new File("lightson.in"));
-        } catch (FileNotFoundException e) {
+            sc = new Kattio("lightson");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    static int n, m, ans = 0;
+    static boolean[][] visited;
+    static boolean[][] back;
+    static int[][] grid;
+    static int [][] sw;
 
-    static room[][] grid; // the grid itself
-    static int n; // grid dimensions, rows and columns
-    static boolean[][] visited; // keeps track of which nodes have been visited
-    static int roomsVisited = 0; // reset to 0 each time we start a new component
-    static connection[] connections;
-
-    static class room {
-        public boolean isLightSwitch = false;
-        public boolean isIlluminated = false;
-        public int illuminatesRoomX, getIlluminatesRoomY = -1;
-
-        public room(boolean isLightSwitch, boolean isIlluminated, int illuminatesRoomX, int getIlluminatesRoomY) {
-            this.isLightSwitch = isLightSwitch;
-            this.isIlluminated = isIlluminated;
-            this.illuminatesRoomX = illuminatesRoomX;
-            this.getIlluminatesRoomY = getIlluminatesRoomY;
-        }
-    }
-
-    static class connection {
-        public int x, y, connectedX, getConnectedY;
-        public boolean hasBeenUsed;
-
-        public connection(int x, int y, int connectedX, int getConnectedY, boolean hasBeenUsed) {
-            this.x = x;
-            this.y = y;
-            this.connectedX = connectedX;
-            this.getConnectedY = getConnectedY;
-            this.hasBeenUsed = hasBeenUsed;
-        }
-    }
-
-    static void floodfill(int r, int c, boolean color) {
-        if (r < 0 || r >= n || c < 0 || c >= n) return; // if outside grid
-        if (grid[r][c].isIlluminated != color) return; // wrong color
-        if (visited[r][c]) return; // already visited this square
-        if(!grid[r][c].isIlluminated) return;
-        visited[r][c] = true; // mark current square as visited
-        for (connection c1 : connections) {
-            if (!c1.hasBeenUsed && c1.x == c && c1.y == r) {
-                c1.hasBeenUsed = true;
-                grid[r][c].isLightSwitch = true;
-                grid[r][c].illuminatesRoomX = c1.connectedX;
-                grid[r][c].getIlluminatesRoomY = c1.getConnectedY;
-                int x = grid[r][c].illuminatesRoomX;
-                int y = grid[r][c].getIlluminatesRoomY;
-                grid[x][y].isIlluminated = true;
+    public static boolean switchOn(int x, int y) {
+        boolean poss = false;
+        for (int i = 0; i < m; i++) {
+            if(x == sw[i][0] && y == sw[i][1]){
+                grid[sw[i][2] - 1][sw[i][3] - 1] = 1;
+                poss = true;
             }
         }
-        roomsVisited++; // increment the size for each square we visit
-        // ^ also input problem specific stuff for the node here
-        // recursively call floodfill for neighboring squares
-        floodfill(r, c + 1, color);
-        floodfill(r, c - 1, color);
-        floodfill(r - 1, c, color);
-        floodfill(r + 1, c, color);
+        return poss;
     }
 
-    public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("lightson.out")));
+    public static void main(String[] args) {
         n = sc.nextInt();
-        int k = sc.nextInt();
-        grid = new room[n][n];
-        connections = new connection[k];
+        m = sc.nextInt();
+
         visited = new boolean[n][n];
-        for (int i = 0; i < k; i++) {
-            // subtract by 1 to covert into zero indexed coordinates
-            connections[i] = new connection(sc.nextInt() - 1, sc.nextInt() - 1, sc.nextInt() - 1, sc.nextInt() - 1, false);
+        back = new boolean[n][n];
+        grid = new int[n][n];
+        sw = new int [m][4];
+
+        for (int i = 0; i < m; i++) {
+            sw[i][0] = sc.nextInt();
+            sw[i][1] = sc.nextInt();
+            sw[i][2] = sc.nextInt();
+            sw[i][3] = sc.nextInt();
         }
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                grid[i][j] = new room(false, false, -1, -1);
+                grid[i][j] = 0;
+                visited[i][j] = false;
+                back[i][j] = false;
             }
         }
-        grid[0][0].isIlluminated = true;
-        roomsVisited = 0;
-        floodfill(0, 0, true);
-//        for (int i = 0; i < n; i++) {
-//            for (int j = 0; j < n; j++) {
-//                if (!visited[i][j]) {
-//                    roomsVisited = 0;
-//                    floodfill(i, j, grid[i][j].isIlluminated);
-//                    // start a floodfill if the square hasn't already been visited,
-//                    // and then store or otherwise use the component size
-//                    // for whatever it's needed for
-//                }
-//            }
-//        }
-        out.println(roomsVisited);
-        out.close();
+
+        grid[0][0] = 1;
+
+        floodfill(0, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if(grid[i][j] == 1)
+                    ++ans;
+            }
+        }
+        sc.println(ans);
+        sc.close();
+    }
+
+    static void floodfill(int r, int c) {
+        if (
+                (r < 0 || r >= n || c < 0 || c >= n)  // if out of bounds
+                        || grid[r][c] != 1  // wrong color
+                        || visited[r][c]  // already visited this square
+        ) return;
+
+        boolean isSwitch = false;
+        visited[r][c] = true; // mark current square as visited
+
+        if(!back[r][c]) {
+            isSwitch = switchOn(r + 1, c + 1);
+            back[r][c] = true;
+        }
+
+        if(isSwitch)
+            visited = new boolean[n][n];
+
+        // recursively call flood fill for neighboring squares
+        floodfill(r, c + 1);
+        floodfill(r, c - 1);
+        floodfill(r - 1, c);
+        floodfill(r + 1, c);
+    }
+
+
+    static class Kattio extends PrintWriter {
+        private BufferedReader r;
+        private StringTokenizer st;
+
+        // standard input
+        public Kattio() { this(System.in,System.out); }
+        public Kattio(InputStream i, OutputStream o) {
+            super(o);
+            r = new BufferedReader(new InputStreamReader(i));
+        }
+        // USACO-style file input
+        public Kattio(String problemName) throws IOException {
+            super(new FileWriter(problemName+".out"));
+            r = new BufferedReader(new FileReader(problemName+".in"));
+        }
+
+        // returns null if no more input
+        public String next() {
+            try {
+                while (st == null || !st.hasMoreTokens())
+                    st = new StringTokenizer(r.readLine());
+                return st.nextToken();
+            } catch (Exception e) {}
+            return null;
+        }
+
+        public int nextInt() { return Integer.parseInt(next()); }
+        public double nextDouble() { return Double.parseDouble(next()); }
+        public long nextLong() { return Long.parseLong(next()); }
     }
 
 }
-
-
-
-
-
-
-
-
-

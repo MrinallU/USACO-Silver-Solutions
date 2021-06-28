@@ -1,7 +1,8 @@
+
 import java.io.*;
 import java.util.*;
 
-public class highcard {
+public class citystate {
 
     static class InputReader {
         BufferedReader reader;
@@ -30,9 +31,9 @@ public class highcard {
         public long nextLong() {
             return Long.parseLong(next());
         } // reads in the next long
+
         public char nextChar() {
             return (next().charAt(0));
-            
         } // reads in the next int
 
         public double nextDouble() {
@@ -44,51 +45,59 @@ public class highcard {
 
     static {
         try {
-            sc = new InputReader(new File("highcard.in"));
+            sc = new InputReader(new File("citystate.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
+    /*
+    6
+MIAMI FL
+DALLAS TX
+FLINT MI
+CLEMSON SC
+BOSTON MA
+ORLANDO FL
+     */
+
+   static HashMap<String, HashSet<String>> map = new HashMap<>();
+
+   static class geoLocation{
+       public String state, city;
+       public geoLocation(String city,String state){
+           this.city = city;
+           this.state = state;
+       }
+   }
+
     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("highcard.out")));
-        
-int n = sc.nextInt(); int [] elsieCards = new int[n]; boolean [] elsieVisited = new boolean[n * 2 + 1]; int points = 0;
-        TreeSet<Integer> bessieQueue = new TreeSet<>();
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("citystate.out")));
+        int n = sc.nextInt(); int paris = 0;   geoLocation [] arr = new geoLocation[n]; // for looping through the cities
+        for (int i = 0; i < n; i++) {
+            String s = sc.next(); String s1 = sc.next();
+            arr[i] = new geoLocation(s, s1);
+            if(!s.substring(0, 2).equals(s1)) {
+                map.computeIfAbsent(s1, k -> new HashSet<>()).add(s);
+            }
+        }
+
 
         for (int i = 0; i < n; i++) {
-            int c = sc.nextInt();
-            elsieCards[i] = c;
-            elsieVisited[c] = true;
-        }
-
-        for (int i = 1; i <= n * 2; i++) {
-            if(!elsieVisited[i]){
-                bessieQueue.add(i); // bessie has all of the cards that elsie does not have
+            if(map.containsKey(arr[i].city.substring(0,2))) {
+                for (String s: map.get(arr[i].city.substring(0, 2))) {
+                    if(s.substring(0, 2).equals(arr[i].state)){
+                        ++paris;
+                    }
+                }
             }
         }
-
-
-        for (int card: elsieCards){
-            if(bessieQueue.higher(card) != null) {
-                int upperCard = bessieQueue.higher(card);
-                ++points;
-                bessieQueue.remove(upperCard);
-            }
-        }
-        out.println(points);
-
-
-
+        out.println(paris / 2);
 
 
 
         out.close();
-
     }
-
 }
-
-
 
 
 

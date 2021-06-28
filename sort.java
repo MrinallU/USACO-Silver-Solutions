@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class highcard {
+public class sort {
 
     static class InputReader {
         BufferedReader reader;
@@ -30,9 +30,9 @@ public class highcard {
         public long nextLong() {
             return Long.parseLong(next());
         } // reads in the next long
+
         public char nextChar() {
             return (next().charAt(0));
-            
         } // reads in the next int
 
         public double nextDouble() {
@@ -44,51 +44,43 @@ public class highcard {
 
     static {
         try {
-            sc = new InputReader(new File("highcard.in"));
+            sc = new InputReader(new File("sort.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
+    
+
     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("highcard.out")));
-        
-int n = sc.nextInt(); int [] elsieCards = new int[n]; boolean [] elsieVisited = new boolean[n * 2 + 1]; int points = 0;
-        TreeSet<Integer> bessieQueue = new TreeSet<>();
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("sort.out")));
+        int n = sc.nextInt(); int [] arr = new int[n];
 
         for (int i = 0; i < n; i++) {
-            int c = sc.nextInt();
-            elsieCards[i] = c;
-            elsieVisited[c] = true;
+            arr[i] = sc.nextInt(); 
         }
 
-        for (int i = 1; i <= n * 2; i++) {
-            if(!elsieVisited[i]){
-                bessieQueue.add(i); // bessie has all of the cards that elsie does not have
+        //Bubble sort
+
+        boolean sorted = false; int moo = 0;
+
+        while (!sorted) {
+            sorted = true;
+            ++moo;
+            for (int i = 0; i <= n - 2; ++i ){
+                if(arr[i + 1] < arr[i]){
+                    int temp = arr[i + 1];
+                    arr[i + 1] = arr[i];
+                    arr[i] = temp;
+                    sorted = false;
+                }
             }
         }
 
-
-        for (int card: elsieCards){
-            if(bessieQueue.higher(card) != null) {
-                int upperCard = bessieQueue.higher(card);
-                ++points;
-                bessieQueue.remove(upperCard);
-            }
-        }
-        out.println(points);
-
-
-
-
-
-
+        out.println(moo);
         out.close();
 
     }
-
 }
-
-
 
 
 
