@@ -1,8 +1,9 @@
-
 import java.io.*;
-import java.util.*;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
 
-public class div7 {
+
+public class cowdance {
 
     static class InputReader {
         BufferedReader reader;
@@ -12,7 +13,6 @@ public class div7 {
             reader = new BufferedReader(new FileReader(stream), 32768);
             tokenizer = null;
         }
-
         String next() { // reads in the next string
             while (tokenizer == null || !tokenizer.hasMoreTokens()) {
                 try {
@@ -41,45 +41,47 @@ public class div7 {
 
     static {
         try {
-            sc = new InputReader(new File("div7.in"));
+            sc = new InputReader(new File("cowdance.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("div7.out")));
-        int N = sc.nextInt(); int [] arr = new int[N]; long [] prefix = new long[N + 1]; int ans = 0;
-        
-        for (int i = 0; i < N; i++) {
-            arr[i] = sc.nextInt();
-            prefix[i + 1] = prefix[i] + arr[i];
+
+    public static void main(String[] args) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("cowdance.out")));
+        int n = sc.nextInt(); int t_MAX = sc.nextInt();
+       int [] cows = new int[n];
+
+
+        for (int i = 0; i < n; i++) {
+            cows[i] = sc.nextInt();
         }
 
+        int high = n; int low = 1;
 
-
-
-        for (int i = 0; i <= N; i++) {
-            for (int j = 0; j <= N; j++) {
-                if(j >= i){
+        while(low != high){
+            int mid = (low+high)/2;
+            PriorityQueue<Integer> pq = new PriorityQueue<>();
+            int t = 0; boolean isTrue = true;
+            for (int j = 0; j < n; j++) {
+                if(pq.size() == mid){
+                    t = pq.poll();
+                }
+                if(t + cows[j] > t_MAX){
+                    isTrue = false;
                     break;
-                }else if((prefix[i] - prefix[j]) % 7 == 0){
-                        ans = Math.max(i - j, ans);
-                    }
-
+                }
+                pq.add(t + cows[j]);
             }
+
+
+            if(!isTrue) low = mid + 1; else high = mid ;
         }
 
-
-        out.println(ans);
-
-
-
-        out.close();
-
+            out.println(low);
+            out.close();
+        }
     }
-}
-
-
 
 
 

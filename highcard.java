@@ -1,8 +1,7 @@
-
 import java.io.*;
 import java.util.*;
 
-public class div7 {
+public class highcard {
 
     static class InputReader {
         BufferedReader reader;
@@ -31,6 +30,10 @@ public class div7 {
         public long nextLong() {
             return Long.parseLong(next());
         } // reads in the next long
+        public char nextChar() {
+            return (next().charAt(0));
+            
+        } // reads in the next int
 
         public double nextDouble() {
             return Double.parseDouble(next());
@@ -41,46 +44,49 @@ public class div7 {
 
     static {
         try {
-            sc = new InputReader(new File("div7.in"));
+            sc = new InputReader(new File("highcard.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("div7.out")));
-        int N = sc.nextInt(); int [] arr = new int[N]; long [] prefix = new long[N + 1]; int ans = 0;
+    public static void main(String[] args) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("highcard.out")));
         
-        for (int i = 0; i < N; i++) {
-            arr[i] = sc.nextInt();
-            prefix[i + 1] = prefix[i] + arr[i];
+int n = sc.nextInt(); int [] elsieCards = new int[n]; boolean [] elsieVisited = new boolean[n * 2 + 1]; int points = 0;
+        TreeSet<Integer> bessieQueue = new TreeSet<>();
+
+        for (int i = 0; i < n; i++) {
+            int c = sc.nextInt();
+            elsieCards[i] = c;
+            elsieVisited[c] = true;
         }
 
-
-
-
-        for (int i = 0; i <= N; i++) {
-            for (int j = 0; j <= N; j++) {
-                if(j >= i){
-                    break;
-                }else if((prefix[i] - prefix[j]) % 7 == 0){
-                        ans = Math.max(i - j, ans);
-                    }
-
+        for (int i = 1; i <= n * 2; i++) {
+            if(!elsieVisited[i]){
+                bessieQueue.add(i); // bessie has all of the cards that elsie does not have
             }
         }
 
 
-        out.println(ans);
+        for (int card: elsieCards){
+            if(bessieQueue.higher(card) != null) {
+                int upperCard = bessieQueue.higher(card);
+                ++points;
+                bessieQueue.remove(upperCard);
+            }
+        }
+        out.println(points);
+
+
+
 
 
 
         out.close();
 
     }
+
 }
-
-
-
 
 
 

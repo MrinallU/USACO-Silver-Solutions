@@ -1,8 +1,9 @@
-
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
-public class div7 {
+
+public class convention {
 
     static class InputReader {
         BufferedReader reader;
@@ -12,7 +13,6 @@ public class div7 {
             reader = new BufferedReader(new FileReader(stream), 32768);
             tokenizer = null;
         }
-
         String next() { // reads in the next string
             while (tokenizer == null || !tokenizer.hasMoreTokens()) {
                 try {
@@ -41,46 +41,57 @@ public class div7 {
 
     static {
         try {
-            sc = new InputReader(new File("div7.in"));
+            sc = new InputReader(new File("convention.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("div7.out")));
-        int N = sc.nextInt(); int [] arr = new int[N]; long [] prefix = new long[N + 1]; int ans = 0;
-        
+     static int N = sc.nextInt(); static int nubBuses = sc.nextInt();static int capacity = 0;
+    static int [] arr = new int[N];
+    public static int binSearch(int low,int high) {
+        if(low == high) return low;
+        if(low + 1 == high)
+        {
+            if(check(low)) return low;
+            return high;
+          
+        }
+        int mid = (low+high)/2;
+        if(check(mid)) return binSearch(low,mid);
+        else return binSearch(mid+1,high);
+    }
+    public static void main(String[] args) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("convention.out")));
         for (int i = 0; i < N; i++) {
             arr[i] = sc.nextInt();
-            prefix[i + 1] = prefix[i] + arr[i];
+        }
+        Arrays.sort(arr);
+        
+
+        out.println( binSearch(0, 1000000000));
+
+            out.close();
         }
 
-
-
-
-        for (int i = 0; i <= N; i++) {
-            for (int j = 0; j <= N; j++) {
-                if(j >= i){
-                    break;
-                }else if((prefix[i] - prefix[j]) % 7 == 0){
-                        ans = Math.max(i - j, ans);
-                    }
-
-            }
-        }
-
-
-        out.println(ans);
-
-
-
-        out.close();
-
+    private static boolean check(int interval) {
+	int wagons = 1;
+	int firstArrival = arr[0];
+	int firstIndex = 0;
+	for(int i=1;i<N;i++)
+	{
+		if(arr[i] - firstArrival > interval || i + 1 - firstIndex > capacity)
+		{
+			wagons += 1;
+			firstArrival = arr[i];
+			firstIndex = i;
+		}
+	}
+	return (wagons <= nubBuses);
     }
 }
 
 
-
+ 
 
 
 

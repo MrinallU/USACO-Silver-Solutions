@@ -1,9 +1,8 @@
+
 import java.io.*;
-import java.util.Comparator;
-import java.util.StringTokenizer;
 import java.util.*;
 
-public class pairup {
+public class citystate {
 
     static class InputReader {
         BufferedReader reader;
@@ -13,6 +12,7 @@ public class pairup {
             reader = new BufferedReader(new FileReader(stream), 32768);
             tokenizer = null;
         }
+
         String next() { // reads in the next string
             while (tokenizer == null || !tokenizer.hasMoreTokens()) {
                 try {
@@ -32,6 +32,10 @@ public class pairup {
             return Long.parseLong(next());
         } // reads in the next long
 
+        public char nextChar() {
+            return (next().charAt(0));
+        } // reads in the next int
+
         public double nextDouble() {
             return Double.parseDouble(next());
         } // reads in the next double
@@ -41,62 +45,59 @@ public class pairup {
 
     static {
         try {
-            sc = new InputReader(new File("pairup.in"));
+            sc = new InputReader(new File("citystate.in"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
-    static class Cow implements Comparable<Cow>{
-       int numCow; int time;
+    /*
+    6
+MIAMI FL
+DALLAS TX
+FLINT MI
+CLEMSON SC
+BOSTON MA
+ORLANDO FL
+     */
 
-       public Cow(int numCow, int time){
-           this.numCow = numCow;
-           this.time = time;
+   static HashMap<String, HashSet<String>> map = new HashMap<>();
+
+   static class geoLocation{
+       public String state, city;
+       public geoLocation(String city,String state){
+           this.city = city;
+           this.state = state;
        }
-
-        @Override
-        public int compareTo(Cow o) {
-            return Integer.compare(this.time, o.time);
-        }
-    }
+   }
 
     public static void main(String[] args) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("pairup.out")));
-        int N = sc.nextInt(); int ans = 0;
-        Cow [] cows = new Cow[N];
-        for (int i = 0; i < N; i++) {
-            cows[i] = new Cow(sc.nextInt(), sc.nextInt());
-        }
-        Arrays.sort(cows);
-
-        int right = cows.length - 1; int left = 0;
-        while(right >= left){
-            int minCow = Math.min(cows[left].numCow, cows[right].numCow);
-
-            cows[left].numCow -= minCow;
-            cows[right].numCow -= minCow;
-
-            int currSum = cows[left].time + cows[right].time;
-
-            ans = Math.max(currSum, ans);
-
-            if(cows[left].numCow <= 0){
-                ++left;
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("citystate.out")));
+        int n = sc.nextInt(); int paris = 0;   geoLocation [] arr = new geoLocation[n]; // for looping through the cities
+        for (int i = 0; i < n; i++) {
+            String s = sc.next(); String s1 = sc.next();
+            arr[i] = new geoLocation(s, s1);
+            if(!s.substring(0, 2).equals(s1)) {
+                map.computeIfAbsent(s1, k -> new HashSet<>()).add(s);
             }
-            if(cows[right].numCow <= 0){
-                --right;
-            }
-
         }
 
-        out.println(ans);
+
+        for (int i = 0; i < n; i++) {
+            if(map.containsKey(arr[i].city.substring(0,2))) {
+                for (String s: map.get(arr[i].city.substring(0, 2))) {
+                    if(s.substring(0, 2).equals(arr[i].state)){
+                        ++paris;
+                    }
+                }
+            }
+        }
+        out.println(paris / 2);
+
+
+
         out.close();
     }
 }
-
-
-
-
 
 
 
